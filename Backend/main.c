@@ -4,11 +4,15 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#include "home.h"   // Existing home.c for transaction routes
-#include "login.h"  // New login.c for login & create account
+#include "home.h"   // home.c for transaction routes
+#include "login.h"  // login.c for login & create account
 
 #define PORT 8080
 #define BUFFER_SIZE 4096
+
+// We'll store the user_id of whoever just logged in.
+// In a real app, you'd use sessions or tokens. This is only a demo.
+static int g_logged_in_user_id = 0;
 
 // Utility function to send a response with custom headers
 void send_response(int socket_fd, const char *status, const char *content_type, const char *body) {
@@ -84,7 +88,6 @@ int main() {
         printf("Received request:\n%s\n", buffer);
 
         // Extract HTTP method and path from the request line
-        // e.g. "POST /home HTTP/1.1\r\n"
         char method[8] = {0};
         char path[256] = {0};
         sscanf(buffer, "%s %s", method, path);
@@ -99,9 +102,25 @@ int main() {
 
         // 7. Routing
         if (strcmp(path, "/home") == 0 && strcmp(method, "POST") == 0) {
-            // Existing /home route from home.c
-            char *dynamic_response = handle_home_request(buffer);
-            send_response(new_socket, "HTTP/1.1 200 OK", "text/plain", dynamic_response);
+            // The /home route to insert a transaction
+            // We'll use the 'global' user id that was set after a successful login
+            if (g_logged_in_user_id == 0) {
+                // If not logged in yet, reject or respond with an error
+                const char *msg = "HTTP/1.1 401 Unauthorized\r\n"
+                                  "Access-Control-Allow-Origin: *\r\n"
+                                  "Access-Control-Allow-Methods: GET, POST, OPTIONS\r\n"
+                                  "Access-Control-Allow-Headers: Content-Type\r\n"
+                                  "Content-Type: text/plain\r\n"
+                                  "Content-Length: 22\r\n"
+                                  "\r\n"
+                                  "Please log in first.\n";
+                write(new_socket, msg, strlen(msg));
+                close(new_socket);
+                continue;
+            }
+
+            char *dynamic_response = handle_home_request(buffer, g_logged_in_user_id);
+            write(new_socket, dynamic_response, strlen(dynamic_response));
             free(dynamic_response);
 
         } else if (strcmp(path, "/create_account") == 0 && strcmp(method, "POST") == 0) {
@@ -112,7 +131,16 @@ int main() {
 
         } else if (strcmp(path, "/login") == 0 && strcmp(method, "POST") == 0) {
             // New route for user login
-            char *dynamic_response = handle_login_request(buffer);
+            // We'll capture the user ID in an out-parameter
+            int temp_user_id = 0; 
+            char *dynamic_response = handle_login_request(buffer, &temp_user_id);
+
+            // If user_id > 0 => login success
+            if (temp_user_id > 0) {
+                g_logged_in_user_id = temp_user_id;
+                printf("Set global user_id = %d\n", g_logged_in_user_id);
+            }
+
             send_response(new_socket, "HTTP/1.1 200 OK", "text/plain", dynamic_response);
             free(dynamic_response);
 

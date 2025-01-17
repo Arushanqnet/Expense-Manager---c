@@ -1,62 +1,88 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from "react";
+// For Chart.js 3 or 4, react-chartjs-2 automatically registers necessary components
+import { Bar } from "react-chartjs-2";
 
 function ReportPage() {
-  const [transactions, setTransactions] = useState([]);
-  const [error, setError] = useState('');
+  const [data, setData] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    // Fetch the transactions from our C backend
-    fetch('http://localhost:8080/transactions', {
-      method: 'GET',
-      credentials: 'include', // if you need cookies or sessions
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Server error: ${response.status}`);
+    // Fetch your combined JSON endpoint
+    fetch("/transactions")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Server responded with ${res.status}`);
         }
-        return response.json();
+        return res.json();
       })
-      .then(data => {
-        if (data.error) {
-          setError(data.error);
-        } else {
-          setTransactions(data);
-        }
+      .then((json) => {
+        // 'json' should have { method1: [...], method2: {...} }
+        setData(json);
       })
-      .catch(err => {
-        setError(err.message);
+      .catch((err) => {
+        console.error(err);
+        setError("Error fetching transactions data");
       });
   }, []);
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div style={{ color: "red" }}>{error}</div>;
   }
 
+  if (!data) {
+    // Still loading
+    return <div>Loading...</div>;
+  }
+
+  // data has { method1, method2 }:
+  const { method1, method2 } = data; // method1 = array of tx, method2 = bar chart config
+
   return (
-    <div style={{ margin: '20px' }}>
-      <h2>User Transactions</h2>
-      {transactions.length === 0 ? (
-        <p>No transactions found.</p>
-      ) : (
-        <table border="1" cellPadding="5" cellSpacing="0">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Amount</th>
-              <th>Description</th>
+    <div style={{ padding: 20 }}>
+      <h1>Transactions</h1>
+
+      {/* 
+        method2 is the entire Chart.js config: 
+        {
+          type: "bar",
+          data: { labels: [...], datasets: [...] },
+          options: { scales: {...} }
+        }
+        BUT with react-chartjs-2, we typically pass "data" and "options" to the Bar component.
+        We'll ignore 'type', because <Bar> is already "bar."
+      */}
+      <h2>Bar Chart</h2>
+      <div style={{ width: "600px", marginBottom: "40px" }}>
+        <Bar data={method2.data} options={method2.options} />
+      </div>
+
+      <h2>All Transactions (Table)</h2>
+      <table
+        border="1"
+        cellPadding="5"
+        style={{ borderCollapse: "collapse", width: "100%", maxWidth: "800px" }}
+      >
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Category</th>
+          </tr>
+        </thead>
+        <tbody>
+          {method1.map((tx) => (
+            <tr key={tx.id}>
+              <td>{tx.id}</td>
+              <td>{tx.trans_type}</td>
+              <td>{tx.amount}</td>
+              <td>{tx.date}</td>
+              <td>{tx.category}</td>
             </tr>
-          </thead>
-          <tbody>
-            {transactions.map((tx) => (
-              <tr key={tx.id}>
-                <td>{tx.id}</td>
-                <td>{tx.amount}</td>
-                <td>{tx.description}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

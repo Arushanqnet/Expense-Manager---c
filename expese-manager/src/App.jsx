@@ -4,6 +4,7 @@ import LoginPage from "./LoginPage";
 import TransactionsPage from "./TransactionsPage";
 import { AuthProvider } from "./useAuth";
 import ProtectedRoute from "./ProtectedRoute";
+import ReportPage from "./ReportPage";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             element={
               <ProtectedRoute>
                 <TransactionsPage />
+                <ReportPage />
               </ProtectedRoute>
             }
           />

@@ -13,6 +13,7 @@ export function AuthProvider({ children }) {
   
   const logout = () => {
     setIsLoggedIn(false);
+    sessionStorage.removeItem("userId");
   };
 
   return (

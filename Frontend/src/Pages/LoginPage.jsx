@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./useAuth";
 import {
@@ -19,6 +19,13 @@ function LoginPage() {
 
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  useEffect(() => {
+    const userId = sessionStorage.getItem("userId");
+    if (userId) {
+      navigate("/home");
+    }
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -42,10 +49,13 @@ function LoginPage() {
 
       if (response.ok && text.includes("successful")) {
         setStatusMsg("Login successful!");
+        // Save user ID in session storage
+        sessionStorage.setItem("userId", username);
+        console.log("User ID stored in session storage:", sessionStorage.getItem("userId"));
         // update auth state
         login();
-        // redirect to transactions page
-        navigate("/transactions");
+        // redirect to home page
+        navigate("/home");
       } else {
         setErrorMsg(text);
       }

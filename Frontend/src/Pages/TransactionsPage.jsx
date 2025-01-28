@@ -62,7 +62,7 @@ const AddTransaction = () => {
     });
 
     try {
-      const response = await fetch("http://51.20.191.222:8080/home", {
+      const response = await fetch("https://spendyze.duckdns.org/home", {
         method: "POST",
         headers: {
           // The naive C server can handle "text/plain" or "application/json"

@@ -45,7 +45,7 @@ function ReportPage() {
   const [chartConfig, setChartConfig] = useState(null);
 
   useEffect(() => {
-    fetch('http://51.20.191.222:8080/transactions') // Adjust to your server/endpoint
+    fetch('https://spendyze.duckdns.org/transactions') // Adjust to your server/endpoint
       .then((res) => res.json())
       .then((data) => {
         // data.method1 = array of transactions

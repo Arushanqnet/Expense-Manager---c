@@ -33,7 +33,7 @@ function LoginPage() {
     setStatusMsg("");
 
     try {
-      const response = await fetch("http://localhost:8080/login", {
+      const response = await fetch("http://51.20.191.222:8080/login", {
         method: "POST",
         headers: {
           "Content-Type": "text/plain"
@@ -71,7 +71,7 @@ function LoginPage() {
     setStatusMsg("");
 
     try {
-      const response = await fetch("http://localhost:8080/create_account", {
+      const response = await fetch("http://51.20.191.222:8080/create_account", {
         method: "POST",
         headers: {
           "Content-Type": "text/plain"

@@ -49,6 +49,16 @@ const Navbar = () => {
           >
             Report
           </Button>
+          
+          {/* New Ai Consultation link */}
+          <Button
+            color="inherit"
+            component={Link}
+            to="/ai-chat"
+            sx={{ textTransform: "none", mr: 2 }}
+          >
+            AI Consultation
+          </Button>
 
           <Button
             color="inherit"

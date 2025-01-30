@@ -102,6 +102,7 @@ const AddTransaction = () => {
           backgroundColor: "#f1f5f9",
           px: { xs: 2, md: 8 },
           py: { xs: 2, md: 4 },
+          width:"100%"
         }}
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -113,7 +114,7 @@ const AddTransaction = () => {
           <Paper
             elevation={4}
             sx={{
-              width: { xs: "100%", md: "90%" },
+              width: { xs: "90%", md: "90%" },
               maxWidth: "1400px", // optional: cap the max width if you like
               margin: "0 auto",
               p: { xs: 2, md: 4 },

@@ -14,7 +14,7 @@ const Footer = () => {
       }}
     >
       <Typography variant="body2" color="text.secondary">
-        © {new Date().getFullYear()} Billion Corp. All rights reserved.
+        © {new Date().getFullYear()} Spendyze. All rights reserved.
       </Typography>
     </Box>
   );

@@ -27,7 +27,7 @@ const Navbar = () => {
       >
         {/* Logo / Brand Name */}
         <Typography variant="h6" component="div" sx={{ fontWeight: "bold" }}>
-          Billion Corp
+          Spendyze
         </Typography>
 
         {/* Navigation Links */}

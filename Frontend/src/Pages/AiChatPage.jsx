@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import Navbar from "../Components/NavBar";
 import Footer from "../Components/Footer";
 
-const GEMINI_API_KEY = "AIzaSyByjsdEWdIf0bJZ-L6svcUNCpTwnFz04nE";
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 // Styled component for a modern “chat bubble”
 const MessageBubble = styled(Paper)(({ theme, sender }) => ({
@@ -75,7 +75,7 @@ const AiChatPage = () => {
         {
           parts: [
             { 
-              text: `User query: ${userInput}\n\nTransactions data:\n${JSON.stringify(tableData)}`
+              text: `Basic prompt : User query: ${userInput}\n\n User's Transactions data:\n${JSON.stringify(tableData)}\nBased on the provided data and provide insights act as a Economic Consultant and counsult the user with their Transaction Datas. Please conclude your response with the statement: "Use Spendyze to spend Efficient ✨."`
             }
           ]
         }

@@ -6,44 +6,32 @@ import Footer from "../Components/Footer";
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-// Styled component for a modern “chat bubble”
 const MessageBubble = styled(Paper)(({ theme, sender }) => ({
   padding: theme.spacing(1.5, 2),
   marginBottom: theme.spacing(1.5),
   maxWidth: '70%',
   alignSelf: sender === 'user' ? 'flex-end' : 'flex-start',
-  // Colors for user vs AI
   backgroundColor: sender === 'user' ? '#E0FFE1' : '#FFFFFF',
   borderRadius: sender === 'user'
     ? '16px 0px 16px 16px'
     : '0px 16px 16px 16px',
 }));
 
-/**
- * Parses any text containing **bold** markers and returns an array of
- * React fragments with <strong> elements where appropriate.
- */
 const parseBoldText = (text) => {
   const boldRegex = /\*\*(.*?)\*\*/g;
   const elements = [];
   let lastIndex = 0;
   let match;
-
   while ((match = boldRegex.exec(text)) !== null) {
-    // Push the text before the match (if any)
     if (match.index > lastIndex) {
       elements.push(text.substring(lastIndex, match.index));
     }
-    // Push the bold text
     elements.push(<strong key={match.index}>{match[1]}</strong>);
     lastIndex = boldRegex.lastIndex;
   }
-
-  // Push any remaining text after the last match
   if (lastIndex < text.length) {
     elements.push(text.substring(lastIndex));
   }
-  
   return elements;
 };
 
@@ -53,7 +41,6 @@ const AiChatPage = () => {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
 
-  // Fetch data from server on mount
   useEffect(() => {
     fetch('https://spendyze.duckdns.org/transactions')
       .then((res) => res.json())
@@ -66,10 +53,7 @@ const AiChatPage = () => {
 
   const handleSend = async () => {
     if (!userInput.trim()) return;
-
-    // Add user message to the chat
     setMessages((prev) => [...prev, { sender: 'user', text: userInput }]);
-
     const requestBody = {
       contents: [
         {
@@ -81,10 +65,7 @@ const AiChatPage = () => {
         }
       ]
     };
-
-    // Clear input field
     setUserInput("");
-
     try {
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
@@ -94,18 +75,13 @@ const AiChatPage = () => {
           body: JSON.stringify(requestBody)
         }
       );
-
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);
       }
-
       const data = await response.json();
-      // The Gemini Pro response structure includes candidates => content => parts => text
       const generatedText = data?.candidates?.[0]?.content?.parts
         ?.map((part) => part.text)
         .join(" ") || "No response text found.";
-
-      // Add AI response to the chat
       setMessages((prev) => [...prev, { sender: 'ai', text: generatedText }]);
     } catch (error) {
       console.error("Error calling Gemini API:", error);
@@ -120,9 +96,11 @@ const AiChatPage = () => {
     <>
       <Navbar />
       <Container
-        maxWidth="sm"
+        maxWidth={false}
+        disableGutters
         sx={{
-          minHeight: "100vh",
+          width: "100vw",
+          minHeight: "96vh",
           display: "flex",
           flexDirection: "column",
           backgroundColor: "#f2f3f5",
@@ -132,8 +110,6 @@ const AiChatPage = () => {
         <Typography variant="h4" align="center" gutterBottom sx={{ mt: 2 }}>
           AI Chat
         </Typography>
-        
-        {/* Chat Area */}
         <Box
           sx={{
             flex: 1,
@@ -158,8 +134,6 @@ const AiChatPage = () => {
             </Box>
           ))}
         </Box>
-
-        {/* Input Area */}
         <Card sx={{ mb: 2 }}>
           <CardContent
             sx={{

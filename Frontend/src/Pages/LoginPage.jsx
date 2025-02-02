@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./useAuth";
-import {
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Stack,
-  Alert,
-  Box
-} from "@mui/material";
+import { Paper, Typography, TextField, Button, Stack, Alert, Box } from "@mui/material";
 
 function LoginPage() {
   const [username, setUsername] = useState("");
@@ -35,32 +27,19 @@ function LoginPage() {
     try {
       const response = await fetch("https://spendyze.duckdns.org/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "text/plain"
-        },
-        body: JSON.stringify({
-          username,
-          password
-        })
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ username, password })
       });
-
       const text = await response.text();
-      console.log("Login response:", text);
-
       if (response.ok && text.includes("successful")) {
         setStatusMsg("Login successful!");
-        // Save user ID in session storage
         sessionStorage.setItem("userId", username);
-        console.log("User ID stored in session storage:", sessionStorage.getItem("userId"));
-        // update auth state
         login();
-        // redirect to home page
         navigate("/home");
       } else {
         setErrorMsg(text);
       }
     } catch (err) {
-      console.error("Login error:", err);
       setErrorMsg("Network or server error.");
     }
   };
@@ -73,39 +52,38 @@ function LoginPage() {
     try {
       const response = await fetch("https://spendyze.duckdns.org/create_account", {
         method: "POST",
-        headers: {
-          "Content-Type": "text/plain"
-        },
-        body: JSON.stringify({
-          username,
-          password
-        })
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ username, password })
       });
-
       const text = await response.text();
-      console.log("Create account response:", text);
-
       if (response.ok && text.includes("successfully")) {
         setStatusMsg("Account created! You can now log in.");
       } else {
         setErrorMsg(text);
       }
     } catch (err) {
-      console.error("Create account error:", err);
       setErrorMsg("Network or server error.");
     }
   };
 
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="100vh"
+      sx={{
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        p: 2
+      }}
     >
       <Paper
         elevation={4}
-        sx={{ padding: 4, maxWidth: 400, width: "100%" }}
+        sx={{
+          width: "100%",
+          maxWidth: 400,
+          p: 4
+        }}
       >
         <Typography variant="h5" mb={2}>
           Login / Create Account

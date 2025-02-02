@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Navbar from "../Components/NavBar";
 import Footer from "../Components/Footer";
-
 import {
   Button,
   FormControl,
@@ -25,61 +24,34 @@ const AddTransaction = () => {
   const [date, setDate] = useState(null);
   const [category, setCategory] = useState("");
   const [customCategory, setCustomCategory] = useState("");
-
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const expenseCategories = [
-    "Food",
-    "Transport",
-    "Shopping",
-    "Rent",
-    "Utilities",
-    "Miscellaneous",
-  ];
-
-  const incomeCategories = [
-    "Salary",
-    "Business",
-    "Investment",
-    "Gift",
-    "Other",
-  ];
+  const expenseCategories = ["Food", "Transport", "Shopping", "Rent", "Utilities", "Miscellaneous"];
+  const incomeCategories = ["Salary", "Business", "Investment", "Gift", "Other"];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Reset messages
     setSuccessMessage("");
     setErrorMessage("");
-
-    // Prepare the body in naive JSON format
     const requestBody = JSON.stringify({
       type: transactionType,
       amount,
       date: date ? date.format("YYYY-MM-DD") : "",
-      category: category || customCategory,
+      category: category || customCategory
     });
-
     try {
       const response = await fetch("https://spendyze.duckdns.org/home", {
         method: "POST",
-        headers: {
-          // The naive C server can handle "text/plain" or "application/json"
-          "Content-Type": "text/plain",
-        },
-        body: requestBody,
+        headers: { "Content-Type": "text/plain" },
+        body: requestBody
       });
-
       if (response.ok) {
-        // Success
         setSuccessMessage("Transaction added successfully!");
       } else {
-        // Server error
         setErrorMessage("Error adding transaction. Please try again.");
       }
-    } catch (error) {
-      console.error("Network or server error:", error);
+    } catch {
       setErrorMessage("Unable to connect to the server.");
     }
   };
@@ -89,48 +61,31 @@ const AddTransaction = () => {
   return (
     <>
       <Navbar />
-
-      {/* 
-        1) Use full-width container so background spans entire screen.
-        2) Add responsive padding for a nicer look.
-      */}
       <Container
         maxWidth={false}
         disableGutters
         sx={{
+          width: "100vw",
           minHeight: "100vh",
           backgroundColor: "#f1f5f9",
           px: { xs: 2, md: 8 },
-          py: { xs: 2, md: 4 },
-          width:"100%"
+          py: { xs: 2, md: 4 }
         }}
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          {/*
-            1) Make Paper wider on desktop by using:
-               width: { xs: '100%', md: '90%' }
-            2) Center it with margin: '0 auto'.
-          */}
           <Paper
             elevation={4}
             sx={{
               width: { xs: "90%", md: "90%" },
-              maxWidth: "1400px", // optional: cap the max width if you like
+              maxWidth: "1400px",
               margin: "0 auto",
               p: { xs: 2, md: 4 },
-              borderRadius: 3,
+              borderRadius: 3
             }}
           >
-            <Typography
-              variant="h5"
-              align="center"
-              gutterBottom
-              sx={{ color: "#333", mb: 2 }}
-            >
+            <Typography variant="h5" align="center" gutterBottom sx={{ color: "#333", mb: 2 }}>
               Add New Transaction
             </Typography>
-
-            {/* Success/Error Messages */}
             {successMessage && (
               <Alert severity="success" sx={{ mb: 2 }}>
                 {successMessage}
@@ -141,22 +96,15 @@ const AddTransaction = () => {
                 {errorMessage}
               </Alert>
             )}
-
-            {/*
-              2-column responsive grid:
-              - Single column (1fr) on mobile (xs)
-              - Two columns (1fr 1fr) on desktop (md+)
-            */}
             <Box
               component="form"
               onSubmit={handleSubmit}
               sx={{
                 display: "grid",
                 gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-                gap: 3,
+                gap: 3
               }}
             >
-              {/* Transaction Type */}
               <FormControl fullWidth>
                 <InputLabel id="transaction-type-label">Type</InputLabel>
                 <Select
@@ -170,8 +118,6 @@ const AddTransaction = () => {
                   <MenuItem value="income">Income</MenuItem>
                 </Select>
               </FormControl>
-
-              {/* Amount */}
               <TextField
                 label="Amount"
                 variant="outlined"
@@ -181,18 +127,12 @@ const AddTransaction = () => {
                 fullWidth
                 required
               />
-
-              {/* Date */}
               <DatePicker
                 label="Date"
                 value={date}
                 onChange={(newValue) => setDate(newValue)}
-                renderInput={(params) => (
-                  <TextField {...params} required fullWidth />
-                )}
+                renderInput={(params) => <TextField {...params} required fullWidth />}
               />
-
-              {/* Category */}
               <FormControl fullWidth>
                 <InputLabel id="category-select-label">Category</InputLabel>
                 <Select
@@ -212,8 +152,6 @@ const AddTransaction = () => {
                   </MenuItem>
                 </Select>
               </FormControl>
-
-              {/* Custom Category */}
               {category === "" && (
                 <TextField
                   label="Custom Category"
@@ -224,8 +162,6 @@ const AddTransaction = () => {
                   required
                 />
               )}
-
-              {/* Submit Button (spans both columns on desktop) */}
               <Stack
                 direction="row"
                 justifyContent="center"
@@ -238,7 +174,7 @@ const AddTransaction = () => {
                   sx={{
                     backgroundColor: "#007aff",
                     ":hover": { backgroundColor: "#005ce6" },
-                    textTransform: "none",
+                    textTransform: "none"
                   }}
                 >
                   Add Transaction
@@ -248,7 +184,6 @@ const AddTransaction = () => {
           </Paper>
         </LocalizationProvider>
       </Container>
-
       <Footer />
     </>
   );
